@@ -5,6 +5,9 @@ var cookieParser = require('cookie-parser');
 var lessMiddleware = require('less-middleware');
 var logger = require('morgan');
 
+function appInit(db){
+
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var apiRouter = require('./routes/api/api');
@@ -45,4 +48,7 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-module.exports = app;
+  return app;
+} //appInit
+
+module.exports = appInit;
