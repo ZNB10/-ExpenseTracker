@@ -11,6 +11,7 @@ function thingInit(db){
         "fecha":0,
         "by":""
     };
+    var thingsColl = db.collection('things');
 
     thingsCollection.push(
         Object.assign(
@@ -24,6 +25,13 @@ function thingInit(db){
     );
 
     router.get('/', (req, res, next)=>{
+        thingsColl.find().toArray(()=>{
+            if(err) return res.status(200).json([]);
+            return res.status(200).json(things);
+        });
+
+
+
         res.status(400).json({"module":thingsCollection});
     });
 
@@ -68,7 +76,7 @@ function thingInit(db){
     });
 
 
-    return Router;
+    return router;
 }
 
 module.exports = thingInit;
