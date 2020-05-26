@@ -1,8 +1,14 @@
 const express = require('express');
 const router = express.Router();
 
-router.get('/', (req, res, next)=>{
-    res.status(200).json({"ok":"El api funciona"});
-});
+function routerInit(db){
+    const securityApi = require('./security');
+    const thingsApi = require('./things')(db);
 
-module.exports = router;
+    router.get('/', (req, res, next)=>{
+        res.status(200).json({"ok":"El api funciona"});
+    });
+
+    return router;
+}
+module.exports = routerInit;
