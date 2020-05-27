@@ -89,7 +89,7 @@ module.exports = function(db){
 
             });
         });
-    }//changePassword
+    }//changePass
 
     function genPassword(rawPassword){
         var hashedPassword = bcrypt.hashSync(rawPassword, 10);
