@@ -6,14 +6,30 @@ function initSecurity(db){
 
 
     router.post('/login', (req, res, next)=>{
-        var user = userModel.getByEmail(req.body.email, (err, user)=>{
+        var email = req.body.email  || 'na';
+        var pswd = req.body.password || 'na';
+
+        if(email === 'na' || pswd === 'na'){
+            return res.status(400).json({"Error": "El correo y la contraseña son necesarios"});
+        }
+        var user = userModel.getByEmail(email, (err, user)=>{
             if(err){
                 return res.status(400).json(err);
             }
             //ver cuenta activa 
             if(!user){
-                console.log("Ocurrio un error al tratar de iniciar sesion " + req.body.email);
+                console.log("Ocurrio un error al tratar de iniciar sesion ERR:EA-I" + req.body.email);
                 return res.status(400).json({Error:"Ocurrio un error al tratar de iniciar sesion"});
+            }
+            if(!user.active){
+                console.log("Ocurrio un error al tratar de iniciar sesion ERR:EA-U" + req.body.email);
+                return res.status(400).json({Error:"Ocurrio un error al tratar de iniciar sesion"});
+
+            }
+            if(userModel.comparePassword(pswd, user.password)){
+                console.log("Ocurrio un error al tratar de iniciar sesion ERR:EC-I" + req.body.email);
+                return res.status(400).json({Error:"Contraseña o correo electronico incorrectos"});
+
             }
             return res.status(200).json(user);
         });
