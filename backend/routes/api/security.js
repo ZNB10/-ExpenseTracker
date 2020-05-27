@@ -1,7 +1,7 @@
 const express = require('express');
 
 const passport = require('passport');
-const locStrat = require('passport-local').Strategy;
+const LocalStrategy = require('passport-local').Strategy;
 const jwt = require('jsonwebtoken');
 
 var router = express.Router();
@@ -13,9 +13,9 @@ function initSecurity(db) {
     //localPassport
     passport.use(
 
-        new locStrat({
-                usrField: 'email',
-                passField: 'password'
+        new LocalStrategy({
+                usernameField: 'email',
+                passwordField: 'password'
             },
             (email, pswd, next) => {
                 //--
@@ -35,7 +35,7 @@ function initSecurity(db) {
                         return next(null, false, { "Error": "El correo y la contraseña son necesarios" });
 
                     }
-                    if (userModel.comparePassword(pswd, user.password)) {
+                    if (!userModel.comparePassword(pswd, user.password)) {
                         console.log("Ocurrio un error al tratar de iniciar sesion ERR:EC-I" + email);
                         return next(null, false, { "Error": "El correo y la contraseña son necesarios" });
 
@@ -44,9 +44,9 @@ function initSecurity(db) {
                     delete user.password;
                     delete user.lastPassword;
                     delete user.active;
-                    delete user.dateCreate;
+                    delete user.dateCreated;
 
-                    return next(null, user, { "msg": "Se logeo correctamente" });
+                    return next(null, user, { "Status": "Se logeo correctamente" });
 
                 });
                 //--
@@ -57,21 +57,23 @@ function initSecurity(db) {
 
 
     router.post('/login', (req, res, next) => {
-        passport.authenticate('local', { session: false }, (err, user, i) => {
-            if (user) {
-                req.login(user, { session: false }, (err) => {
-                    if (err) {
-                        return res.status(400).json({ "msg": "No se pudo iniciarsesion" });
-                    }
-                    var token = jwt.sign(user, 'acklendavenuechallenge');
-                    return res.status().json({ user, token });
-                });
+        passport.authenticate(
+            'local', { session: false },
+            (err, user, info) => {
+                if (user) {
+                    req.login(user, { session: false }, (err) => {
+                        if (err) {
+                            return res.status(400).json({ "Error": "No se pudo iniciar sesion" });
+                        }
+                        const token = jwt.sign(user, 'acklendavenuechallenge');
+                        return res.status(200).json({ user, token });
+                    });
 
-            } else {
-                return res.status(400).json({ info });
-            }
+                } else {
+                    return res.status(400).json({ info });
+                }
 
-        })(req, res);
+            })(req, res);
 
     });
 

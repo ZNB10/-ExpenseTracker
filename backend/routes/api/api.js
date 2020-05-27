@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+
 const passport = require('passport');
 const passportJWT = require('passport-jwt');
 const ExtractJWT = passportJWT.ExtractJwt;
@@ -30,7 +31,7 @@ function routerInit(db) {
     });
 
     router.use('/security', securityApi);
-    router.use('/things', thingsApi);
+    router.use('/things', passport.authenticate('jwt', { session: false }), thingsApi);
 
     return router;
 }
