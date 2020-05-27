@@ -2,7 +2,7 @@ var ObjectID =require('mongodb').ObjectID;
 var bcrypt = require('bcrypt');
 
 module.exports = function(db){
-    var userColl = db.collection('users');
+    var userColl = db.collection('user');
     var userModel = {}
     
     //Obtener usuario por correo
@@ -40,11 +40,11 @@ module.exports = function(db){
 
             }
             return handler(null, result.ops[0]);
-        });
-    };//addNewUser
+        })
+    }//addNewUser
 
     userModel.changePassword = (email, newPassword, handler)=>{
-        var query = {email:email},
+        var query = {email: email};
         var projection = {"password":1, "active":1, "lastPassword":1} //MongoDB Projection
         userColl.findOne(query, {"projection": projection}, (err, user)=>{
             if(err){
@@ -75,7 +75,7 @@ module.exports = function(db){
             }
 
             //Si todo devuelve false
-            var lastPassword = user.lastPasswords.slice(1, 4);
+            var lastPasswords = user.lastPasswords.slice(1, 4);
             lastPasswords.push(user.password);
             var update = {
                 "$set": {"password": newPasswordHash, "lastPasswords": lastPasswords, "lastChangePassword": new Date().getTime()}
@@ -85,10 +85,10 @@ module.exports = function(db){
                     console.log(err);
                     return handler(err, null);
                 }
+                return handler(null, true);
+
             });
-
-
-        })
+        });
     }//changePassword
 
     function genPassword(rawPassword){
