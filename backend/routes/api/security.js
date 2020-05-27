@@ -14,12 +14,10 @@ function initSecurity(db){
         }
         var user = userModel.getByEmail(email, (err, user)=>{
             if(err){
-                return res.status(400).json(err);
-            }
-            //ver cuenta activa 
-            if(!user){
+                console.log(err);
                 console.log("Ocurrio un error al tratar de iniciar sesion ERR:EA-I" + req.body.email);
                 return res.status(400).json({Error:"Ocurrio un error al tratar de iniciar sesion"});
+s
             }
             if(!user.active){
                 console.log("Ocurrio un error al tratar de iniciar sesion ERR:EA-U" + req.body.email);
