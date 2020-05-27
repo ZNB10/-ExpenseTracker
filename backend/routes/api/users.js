@@ -2,7 +2,7 @@ var ObjectID =require('mongodb').ObjectID;
 var bcrypt = require('bcrypt');
 
 module.exports = function(db){
-    var userColl = db.collection('user');
+    var userColl = db.collection('users');
     var userModel = {}
     
     //Obtener usuario por correo
