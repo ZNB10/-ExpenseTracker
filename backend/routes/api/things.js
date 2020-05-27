@@ -34,6 +34,32 @@ function thingsInit(db){
 
     });//getAll
 
+    router.get('/page', (req, res, next)=>{
+        getThings(1, 50, res);
+
+    });//getPage
+
+    router.get('/page/:p/:n', (req, res, next)=>{
+        var page = parseInt(req.params.p);
+        var items = parseInt(req.params.n);
+        getThings(page, items, res);
+    });//getPage(Pages, items)
+
+    function getThings(page, items, res){
+        var query = {};
+        var options = {
+            "limit": items,
+            "projection":{
+                "descripcion":1
+            }
+        };
+        thingsColl.find(query, options).toArray((err,things)=>{
+            if(err) return res.status(200).json([]);
+            return res.status(200).json(things);
+            
+        });
+    }
+
     router.get('/:id', (req, res, next)=>{
         var query = {"_id": new ObjectID(req.params.id)};
         thingsColl.findOne(query, (err, doc)=>{
