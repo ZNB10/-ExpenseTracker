@@ -1,4 +1,9 @@
+
 const express = require('express');
+const passport = require('passport');
+const locStrat = require('passport-local');
+const jwt = require('jsonwebtoken');
+
 var router = express.Router();
 
 function initSecurity(db){
@@ -14,7 +19,7 @@ function initSecurity(db){
         }
         var user = userModel.getByEmail(email, (err, user)=>{
             if(err){
-                console.log(err)
+                console.log(err);
                 console.log("Ocurrio un error al tratar de iniciar sesion ERR:EA-I" + req.body.email);
                 return res.status(400).json({Error:"Ocurrio un error al tratar de iniciar sesion"});
 
