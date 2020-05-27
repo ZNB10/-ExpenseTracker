@@ -1,5 +1,6 @@
 const express = require('express');
 var router = express.Router();
+var ObjectID = require('mongodb').ObjectID;
 
 function thingsInit(db){
 
@@ -31,8 +32,18 @@ function thingsInit(db){
             return res.status(200).json(things);
         });
 
-        //res.status(400).json({"module":thingsCollection});
     });
+
+    router.get('/:id', (req, res, next)=>{
+        var query = {"_id": new ObjectID(req.params.id)};
+        thingsColl.findOne(query, (err, doc)=>{
+            if(err) {
+                console.log(err);
+                return res.status(401).json({"error": "Error al extraer el documento"});
+            }
+            return res.status(200).json(doc);
+        });//findOne
+    });//get by Id
 
     router.post('/', (req, res, next)=>{
         var newElement = Object.assign(
@@ -44,8 +55,6 @@ function thingsInit(db){
                 "id": new Date().getTime()
             }
         );
-        //thingsCollection.push(newElement);
-        //res.status(200).json({newElement});
 
         thingsColl.insertOne(newElement, {}, (err, result)=>{
             if(err){
