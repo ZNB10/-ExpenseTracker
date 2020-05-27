@@ -32,7 +32,7 @@ function thingsInit(db){
             return res.status(200).json(things);
         });
 
-    });
+    });//getAll
 
     router.get('/:id', (req, res, next)=>{
         var query = {"_id": new ObjectID(req.params.id)};
@@ -43,7 +43,7 @@ function thingsInit(db){
             }
             return res.status(200).json(doc);
         });//findOne
-    });//get by Id
+    });//getById
 
     router.post('/', (req, res, next)=>{
         var newElement = Object.assign(
@@ -68,29 +68,34 @@ function thingsInit(db){
 
 
     router.put('/:idElement', (req, res, next)=>{
-        var id = parseInt(req.params.idElement);
-        var update = req.body;
-        var modifiedObject = {};
-        var originalObject = {};
-
-        thingsCollection = thingsCollection.map((e, i)=>{
-            if(e.id === id){
-                originalObject = Object.assign({}, e);
-                return Object.assign(modifiedObject, e, req.body);
+        var query = {"_id": new ObjectID(req.params.idElement)};
+        var update = {"$set": req.body, "$inc":{"visited":1}};
+        
+        thingsColl.updateOne(query, update, (err, rst)=>{
+            if(err){
+                return res.status(400).json({"Error": "Error al actualziar el documento"});
             }
-            return e;
-        });
-        res.status(200).json({"O":originalObject, "M":modifiedObject});
+
+            return res.status(200).json(rst);
+        }); //updateOne
+
+
     });
 
     router.delete('/:id', (req,res,next)=>{
-        var id = parseInt(req.params.id);
-        thingsCollection = thingsCollection.filter((e, i)=>{
-            return (e.id !== id);
+
+        var query = {"_id": ObjectID(req.params.id)}
+        thingsColl.removeOne(query, (err, result)=>{
+            if(err){
+                console.log(err);
+                return res.status(400).json({"Error": "Error al eliminar el documento"});
+
+            }else{
+                return res.status(200).json(result);
+            }
         });
 
-        res.status(200).json({'msg': "Elemento "+ id +" fue eliminado"});
-    });
+      });
 
 
     return router;
