@@ -22,20 +22,45 @@ module.exports = function(db){
 
     //Ingreso de nuevo user
     userModel.addNew = (email, password, handler) =>{
-        var newUser = Object.assign({}, {email:email, password:genPassword() });
+        var newUser = Object.assign({}, {
+            email:email, 
+            password:genPassword(password), 
+            dateCreated: new Date().getTime(),
+            active: true,
+            lastPasswords:[],
+            roles:["public"]
+        });
         userColl.insertOne(newUser, (err, result)=>{
             if(err){
                 console.log(err);
                 return handler(err, null);
             }
-            if(){
-                
+            if(result.insertedCount == 0){
+                return handler(new Error("No se guardo el usuario"), null);
+
             }
+            return handler(null, result.ops[0]);
         });
     };//addNewUser
 
+    userModel.changePassword = (email, newPassword, handler)=>{
+        var query = {email:email},
+        var projection = {"password":1, "active":1, "lastPassword":1} //MongoDB Projection
+        userColl.findOne(query, {"projection": projection}, (err, user)=>{
+            if(err){
+                console.log(err);
+                return handler(err,null);
+            }
+            if(!user){
+                return handler(new Error("No se encontro usuario"), null);
+            }
+            if(!user.active)
+        })
+    }//changePassword
+
     function genPassword(rawPassword){
-        return rawPassword;
+        var hashedPassword = bcrypt.hashSync(rawPassword, 10);
+        return hashedPassword;
     }
     return userModel;
 }
