@@ -95,5 +95,10 @@ module.exports = function(db){
         var hashedPassword = bcrypt.hashSync(rawPassword, 10);
         return hashedPassword;
     }
+
+    userModel.comparePassword=(rawPassword, dbPassword)=>{
+        return bcrypt.compareSync(rawPassword, dbPassword);
+        
+    }
     return userModel;
 }

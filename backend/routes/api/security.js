@@ -10,6 +10,11 @@ function initSecurity(db){
             if(err){
                 return res.status(400).json(err);
             }
+            //ver cuenta activa 
+            if(!user){
+                console.log("Ocurrio un error al tratar de iniciar sesion " + req.body.email);
+                return res.status(400).json({Error:"Ocurrio un error al tratar de iniciar sesion"});
+            }
             return res.status(200).json(user);
         });
     });
