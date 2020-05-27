@@ -54,7 +54,40 @@ module.exports = function(db){
             if(!user){
                 return handler(new Error("No se encontro usuario"), null);
             }
-            if(!user.active)
+            if(!user.active){
+                return handler(new Error("Usuario Inactivo"), null);
+            }
+
+            var newPasswordHash = genPassword(newPassword); //Password encrypt
+            
+            if(bcrypt.compareSync(newPassword, user.password)){
+                return handler(new Error("Error: Debe usar una contraseña nueva"), null);
+            }
+
+            var oldPasswords = user.lastPasswords.filter(
+                (psw, i)=>{
+                    return bcrypt.compareSync(newPassword, psw);
+                }
+            );
+
+            if(oldPasswords.lenght > 0){
+                return handler(new Error("Error: Debe usar una contraseña nueva 2"), null);
+            }
+
+            //Si todo devuelve false
+            var lastPassword = user.lastPasswords.slice(1, 4);
+            lastPasswords.push(user.password);
+            var update = {
+                "$set": {"password": newPasswordHash, "lastPasswords": lastPasswords, "lastChangePassword": new Date().getTime()}
+            }
+            userColl.updateOne({"_id": user._id}, update, (err, result)=>{
+                if(err){
+                    console.log(err);
+                    return handler(err, null);
+                }
+            });
+
+
         })
     }//changePassword
 
