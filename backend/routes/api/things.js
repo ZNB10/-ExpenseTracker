@@ -49,6 +49,7 @@ function thingsInit(db){
         var query = {};
         var options = {
             "limit": items,
+            "skip": ((page-1) * items),
             "projection":{
                 "descripcion":1
             }
