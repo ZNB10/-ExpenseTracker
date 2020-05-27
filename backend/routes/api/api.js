@@ -9,6 +9,9 @@ function routerInit(db){
         res.status(200).json({"ok":"El api funciona"});
     });
 
+    router.use('/security', securityApi);
+    router.use('/things', thingsApi);
+
     return router;
 }
 module.exports = routerInit;

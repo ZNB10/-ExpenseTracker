@@ -1,7 +1,9 @@
 const express = require('express');
 var router = express.Router();
 
-function thingInit(db){
+function thingsInit(db){
+
+    var thingsColl = db.collection('things');
 
     var thingsCollection = [];
 
@@ -11,7 +13,6 @@ function thingInit(db){
         "fecha":0,
         "by":""
     };
-    var thingsColl = db.collection('things');
 
     thingsCollection.push(
         Object.assign(
@@ -25,14 +26,12 @@ function thingInit(db){
     );
 
     router.get('/', (req, res, next)=>{
-        thingsColl.find().toArray(()=>{
+        thingsColl.find().toArray((err, things)=>{
             if(err) return res.status(200).json([]);
             return res.status(200).json(things);
         });
 
-
-
-        res.status(400).json({"module":thingsCollection});
+        //res.status(400).json({"module":thingsCollection});
     });
 
     router.post('/', (req, res, next)=>{
@@ -79,4 +78,4 @@ function thingInit(db){
     return router;
 }
 
-module.exports = thingInit;
+module.exports = thingsInit;

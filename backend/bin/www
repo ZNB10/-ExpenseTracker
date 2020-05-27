@@ -9,12 +9,13 @@ var MongoDb = 'ExpenseTrackerV1';
 var MongoOption = { useUnifiedTopology: true};
 
 MongoClient.connect(MongoUri, MongoOption, (err, conn) =>{
-    if(err){
-      console.log(err);
-      process.exit(1);
-    }else{
-      console.log("Se conecto con exito a mongodb");
-    }
+
+  if(err){
+    console.log(err);
+    process.exit(1);
+  }else{
+    console.log("Se conecto con exito a mongodb");
+  }
 
   var db = conn.db(MongoDb);
   var app = require('../app')(db);
@@ -102,4 +103,4 @@ MongoClient.connect(MongoUri, MongoOption, (err, conn) =>{
     debug('Listening on ' + bind);
   }
 
-});
+});// Mongo Connect
