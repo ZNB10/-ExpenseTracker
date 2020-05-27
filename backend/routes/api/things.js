@@ -44,8 +44,17 @@ function thingsInit(db){
                 "id": new Date().getTime()
             }
         );
-        thingsCollection.push(newElement);
-        res.status(200).json({newElement});
+        //thingsCollection.push(newElement);
+        //res.status(200).json({newElement});
+
+        thingsColl.insertOne(newElement, {}, (err, result)=>{
+            if(err){
+                console.log("Ocurrio un error: "+ err);
+                return res.status(404).json({"error":"No se pudo Insertar"});
+            }
+
+            return res.status(200).json({"n": result.inserteCount, "obj": result.ops[0]});
+        });
     });
 
 
