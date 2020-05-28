@@ -75,7 +75,7 @@ module.exports = function(db){
             }
 
             //Si todo devuelve false
-            var lastPasswords = user.lastPasswords.slice(1, 4);
+            var lastPasswords = user.lastPasswords.slice(1, 5);
             lastPasswords.push(user.password);
             var update = {
                 "$set": {"password": newPasswordHash, "lastPasswords": lastPasswords, "lastChangePassword": new Date().getTime()}

@@ -7,7 +7,7 @@ function thingsInit(db){
     var thingsColl = db.collection('things');
 
     var thingsStruct = {
-        "descripcion":"",
+        "descripcion":'',
         "fecha":0,
         "by":{}
     };
@@ -27,13 +27,16 @@ function thingsInit(db){
     });//getPage
 
     router.get('/page/:p/:n', (req, res, next)=>{
+        console.log("User id: "+ req.user._id);
         var by = {"by._id": new ObjectID(req.user._id)}
+        console.log("Este es el p " + req.params.p);
+        console.log("Este es el n " + req.params.n);
         for (const key in by) {
-            console.log(by[key]);
+            console.log("By: " + by[key]);
         }
-        console.log("Este es el by" + by);
         var page = parseInt(req.params.p);
         var items = parseInt(req.params.n);
+        
         getThings(page, items, res, by);
     });//getPage(Pages, items)
 
@@ -44,9 +47,12 @@ function thingsInit(db){
             "skip": ((page-1) * items),
             "projection":{
                 "descripcion":1
-            },
-            "sort": [["fecha", -1]]
+            },            
         };
+        console.log("Query" + query);
+        for (const key in options) {
+            console.log("Opciones: " + options[key]);
+        }
         let a = thingsColl.find(query, options); 
         let totalThings = await a.count(); 
         a.toArray((err, things)=>{
@@ -101,6 +107,7 @@ function thingsInit(db){
         
         thingsColl.updateOne(query, update, (err, rst)=>{
             if(err){
+                console.log(err);
                 return res.status(400).json({"Error": "Error al actualziar el documento"});
             }
 
@@ -118,9 +125,9 @@ function thingsInit(db){
                 console.log(err);
                 return res.status(400).json({"Error": "Error al eliminar el documento"});
 
-            }else{
-                return res.status(200).json(result);
             }
+            return res.status(200).json(result);
+            
         });
 
       });
