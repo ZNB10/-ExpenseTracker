@@ -6,25 +6,11 @@ function thingsInit(db){
 
     var thingsColl = db.collection('things');
 
-    var thingsCollection = [];
-
     var thingsStruct = {
-        "id":0,
         "descripcion":"",
         "fecha":0,
-        "by":""
+        "by":{}
     };
-
-    thingsCollection.push(
-        Object.assign(
-            {},
-            thingsStruct, {
-            "id":1, 
-            "descipcion":"Mi Primer Thing", 
-            "fecha": new Date().getTime(), 
-            "by": "Yonathan Cruz"
-        })
-    );
 
     router.get('/', (req, res, next)=>{
         thingsColl.find().toArray((err, things)=>{
@@ -35,30 +21,39 @@ function thingsInit(db){
     });//getAll
 
     router.get('/page', (req, res, next)=>{
-        getThings(1, 50, res);
+        var by = {"by._id": new ObjectID(req.user._id)}
+        getThings(1, 50, res, by);
 
     });//getPage
 
     router.get('/page/:p/:n', (req, res, next)=>{
+        var by = {"by._id": new ObjectID(req.user._id)}
+        for (const key in by) {
+            console.log(by[key]);
+        }
+        console.log("Este es el by" + by);
         var page = parseInt(req.params.p);
         var items = parseInt(req.params.n);
-        getThings(page, items, res);
+        getThings(page, items, res, by);
     });//getPage(Pages, items)
 
-    function getThings(page, items, res){
-        var query = {};
+    async function getThings(page, items, res, by){
+        var query = by;
         var options = {
             "limit": items,
             "skip": ((page-1) * items),
             "projection":{
                 "descripcion":1
-            }
+            },
+            "sort": [["fecha", -1]]
         };
-        thingsColl.find(query, options).toArray((err,things)=>{
+        let a = thingsColl.find(query, options); 
+        let totalThings = await a.count(); 
+        a.toArray((err, things)=>{
             if(err) return res.status(200).json([]);
-            return res.status(200).json(things);
+            return res.status(200).json({things, totalThings});
             
-        });
+        });//find toArray
     }
 
     router.get('/:id', (req, res, next)=>{
@@ -73,13 +68,19 @@ function thingsInit(db){
     });//getById
 
     router.post('/', (req, res, next)=>{
+        var {_id, email} = req.user;
         var newElement = Object.assign(
             {},
             thingsStruct,
             req.body,
             {
                 "fecha": new Date().getTime(),
-                "id": new Date().getTime()
+                "by":{
+                    "_id": new ObjectID(_id),
+                    "email": email
+
+                }
+
             }
         );
 
