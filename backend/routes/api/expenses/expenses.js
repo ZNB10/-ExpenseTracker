@@ -5,22 +5,23 @@ var ObjectID = require('mongodb').ObjectID;
 
 function expensesInit(db){
     var expensesColl = db.collection('expenses');
-
+//expenseDesc, expenseMoney
     var expensesStruct = {
-        "descripcion":'',
-        "gasto":0,
+        "expenseDesc":'',
+        "expenseMoney":0,
         "by":{}
     };
 
     router.post('/', (req, res, next)=>{
         console.log('Utiliza esta ruta para insertar expenses');
         var {_id, email} = req.user;
+        getTimet()
         var newElement = Object.assign(
             {},
             expensesStruct,
             req.body,
             {
-                "fecha": new Date().getTime(),
+                "fecha": getTimet(),
                 "by":{
                     "_id": new ObjectID(_id),
                     "email": email
@@ -29,7 +30,7 @@ function expensesInit(db){
 
             }
         );
-
+        
         expensesColl.insertOne(newElement, {}, (err, result)=>{
             if(err){
                 console.log("Ocurrio un error: "+ err);
@@ -38,7 +39,19 @@ function expensesInit(db){
 
             return res.status(200).json({"n": result.inserteCount, "obj": result.ops[0]});
         });
+
+        
     });//Insertar Things
+
+    function getTimet(){
+
+        var fecha = new Date();
+        var year = fecha.getFullYear();
+        var mes = fecha.getMonth();
+        var dia = fecha.getDate(); 
+        
+        return (year +'-'+ (mes + 1) +'-'+ dia);
+    };
     return router;
 }
 module.exports = expensesInit;
