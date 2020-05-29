@@ -11,11 +11,7 @@ function thingsInit(db){
         "fecha":0,
         "by":{}
     };
-    var expensesStruct = {
-        "descripcion":'',
-        "gasto":0,
-        "by":{}
-    };
+    
 
     router.get('/', (req, res, next)=>{
         thingsColl.find().toArray((err, things)=>{

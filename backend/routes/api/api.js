@@ -23,6 +23,7 @@ function routerInit(db) {
     );
 
     const securityApi = require('./security/security')(db);
+    const expensesApi = require('./expenses/expenses')(db);
     const thingsApi = require('./things')(db);
     //const thingsApi = require('./things', passport.authenticate('jwt', { session: false }), thingsApi)(db);
 
@@ -32,7 +33,7 @@ function routerInit(db) {
 
     router.use('/security/security', securityApi);
     router.use('/things', passport.authenticate('jwt', { session: false }), thingsApi);
-
+    router.use('/expenses/expenses', passport.authenticate('jwt', { session: false}) ,expensesApi);
     return router;
 }
 module.exports = routerInit;
