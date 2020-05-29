@@ -7,9 +7,10 @@ function expensesInit(db){
     var expensesColl = db.collection('expenses');
 //expenseDesc, expenseMoney
     var expensesStruct = {
+        "expenseType":'',
         "expenseDesc":'',
         "expenseMoney":0,
-        "by":{}
+        "expenseBy":{}
     };
 
     router.post('/', (req, res, next)=>{
@@ -21,8 +22,8 @@ function expensesInit(db){
             expensesStruct,
             req.body,
             {
-                "fecha": getTimet(),
-                "by":{
+                "expenseDate": getTimet(),
+                "expenseBy":{
                     "_id": new ObjectID(_id),
                     "email": email
 
