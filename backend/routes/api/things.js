@@ -14,6 +14,7 @@ function thingsInit(db){
     
 
     router.get('/', (req, res, next)=>{
+        console.log("Primera");
         thingsColl.find().toArray((err, things)=>{
             if(err) return res.status(200).json([]);
             return res.status(200).json(things);
@@ -22,12 +23,14 @@ function thingsInit(db){
     });//getAll
 
     router.get('/page', (req, res, next)=>{
+        console.log("Segunda");
         var by = {"by._id": new ObjectID(req.user._id)}
         getThings(1, 50, res, by);
 
     });//getPage
 
     router.get('/page/:p/:n', (req, res, next)=>{
+        console.log("Tercera");
         var by = {"by._id": new ObjectID(req.user._id)}
         var page = parseInt(req.params.p);
         var items = parseInt(req.params.n);
@@ -36,6 +39,7 @@ function thingsInit(db){
     });//getPage(Pages, items)
 
     async function getThings(page, items, res, by){
+        console.log("Cuarta");
         var query = by;
         var options = {
             "limit": items,
@@ -55,6 +59,7 @@ function thingsInit(db){
     }
 
     router.get('/:id', (req, res, next)=>{
+        console.log("Quinta");
         var query = {"_id": new ObjectID(req.params.id)};
         thingsColl.findOne(query, (err, doc)=>{
             if(err) {
@@ -66,6 +71,7 @@ function thingsInit(db){
     });//getById
 
     router.post('/', (req, res, next)=>{
+        console.log("Sexta");
         console.log('Utiliza esta ruta para insertar');
         var {_id, email} = req.user;
         var newElement = Object.assign(
