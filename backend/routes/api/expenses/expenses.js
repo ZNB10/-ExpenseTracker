@@ -16,13 +16,12 @@ function expensesInit(db){
     router.post('/', (req, res, next)=>{
         console.log('Utiliza esta ruta para insertar expenses');
         var {_id, email} = req.user;
-        getTimet()
         var newElement = Object.assign(
             {},
             expensesStruct,
             req.body,
             {
-                "expenseDate": getTimet(),
+                "expenseDate": new Date().getTime(),
                 "expenseBy":{
                     "_id": new ObjectID(_id),
                     "email": email
@@ -42,17 +41,8 @@ function expensesInit(db){
         });
 
         
-    });//Insertar Things
+    });//Insertar Expenses
 
-    function getTimet(){
-
-        var fecha = new Date();
-        var year = fecha.getFullYear();
-        var mes = fecha.getMonth();
-        var dia = fecha.getDate(); 
-        
-        return (year +'-'+ (mes + 1) +'-'+ dia);
-    };
     return router;
 }
 module.exports = expensesInit;
