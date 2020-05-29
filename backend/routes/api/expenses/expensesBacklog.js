@@ -11,10 +11,19 @@ function expensesBacklogInit(db){
         var by = {"by._id": new ObjectID(req.user._id)}
         var page = parseInt(req.params.p);
         var items = parseInt(req.params.n);
-        
+        getExpenses(page, items, res, by);
     });//obtener por pagina
 
-    async function getThings(page, items, res, by){
+    router.get('/:id', (req, res, next)=>{
+        var query = {"_id": new ObjectID(req.params.id)};
+        expensesColl.findOne(query, (err, doc)=>{
+            if(err){return res.status(401).json({"error": "Error al extraer el documento"});
+        }
+            return res.status(200).json(doc);
+        });//Encontrar uno
+    });//Obtener por id
+
+    async function getExpenses(page, items, res, by){
         var query = by;
         var option = {
             "limit":items,
@@ -24,7 +33,12 @@ function expensesBacklogInit(db){
             },
             "sort":[["expenseDate", -1]]
         };
-        let a = getThingsColl
+        let a = getThingsColl.find(query, option);
+        let totalExpenses= await a.count();
+        a.toArray((err, expenses)=>{
+            if(err) return res.status(200).json([]);
+            return res.status(200).json({expenses, totalExpenses});
+        });
     }
     return router;
 }
