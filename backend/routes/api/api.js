@@ -22,7 +22,7 @@ function routerInit(db) {
         )
     );
 
-    const securityApi = require('./security')(db);
+    const securityApi = require('./security/security')(db);
     const thingsApi = require('./things')(db);
     //const thingsApi = require('./things', passport.authenticate('jwt', { session: false }), thingsApi)(db);
 
@@ -30,7 +30,7 @@ function routerInit(db) {
         res.status(200).json({ "ok": "Api version 1" });
     });
 
-    router.use('/security', securityApi);
+    router.use('/security/security', securityApi);
     router.use('/things', passport.authenticate('jwt', { session: false }), thingsApi);
 
     return router;

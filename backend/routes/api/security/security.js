@@ -8,7 +8,7 @@ var router = express.Router();
 
 function initSecurity(db) {
 
-    var userModel = require('./users')(db);
+    var userModel = require('../users')(db);
 
     //localPassport
     passport.use(

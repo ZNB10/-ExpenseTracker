@@ -11,6 +11,11 @@ function thingsInit(db){
         "fecha":0,
         "by":{}
     };
+    var expensesStruct = {
+        "descripcion":'',
+        "gasto":0,
+        "by":{}
+    };
 
     router.get('/', (req, res, next)=>{
         thingsColl.find().toArray((err, things)=>{
@@ -27,13 +32,7 @@ function thingsInit(db){
     });//getPage
 
     router.get('/page/:p/:n', (req, res, next)=>{
-        console.log("User id: "+ req.user._id);
         var by = {"by._id": new ObjectID(req.user._id)}
-        console.log("Este es el p " + req.params.p);
-        console.log("Este es el n " + req.params.n);
-        for (const key in by) {
-            console.log("By: " + by[key]);
-        }
         var page = parseInt(req.params.p);
         var items = parseInt(req.params.n);
         
@@ -47,12 +46,9 @@ function thingsInit(db){
             "skip": ((page-1) * items),
             "projection":{
                 "descripcion":1
-            },            
+            },    
+            "sort": [["fecha",-1]]        
         };
-        console.log("Query" + query);
-        for (const key in options) {
-            console.log("Opciones: " + options[key]);
-        }
         let a = thingsColl.find(query, options); 
         let totalThings = await a.count(); 
         a.toArray((err, things)=>{
@@ -74,6 +70,7 @@ function thingsInit(db){
     });//getById
 
     router.post('/', (req, res, next)=>{
+        console.log('Utiliza esta ruta para insertar');
         var {_id, email} = req.user;
         var newElement = Object.assign(
             {},
@@ -98,10 +95,13 @@ function thingsInit(db){
 
             return res.status(200).json({"n": result.inserteCount, "obj": result.ops[0]});
         });
-    });
+    });//Insertar Things
+
+    
 
 
     router.put('/:idElement', (req, res, next)=>{
+        console.log('Utiliza esta ruta para actualizar');
         var query = {"_id": new ObjectID(req.params.idElement)};
         var update = {"$set": req.body, "$inc":{"visited":1}};
         
