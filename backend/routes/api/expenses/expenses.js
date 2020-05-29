@@ -13,6 +13,54 @@ function expensesInit(db){
         "expenseBy":{}
     };
 
+    router.get('/', (req, res, next)=>{
+        expensesColl.find().toArray((err, expenses)=>{
+          if(err) return res.status(200).json([]);
+          return res.status(200).json(expenses);
+        });
+    });
+
+    router.get('/page', (req, res, next) => {
+        var by = {"expenseBy._id": new ObjectID(req.user._id)};
+        getExpenses(1, 50, res, by);
+    });
+
+    router.get('/page/:p/:n', (req, res, next)=>{
+        var by = {"expenseBy._id": new ObjectID(req.user._id)}
+        var page = parseInt(req.params.p);
+        var items = parseInt(req.params.n);
+        getExpenses(page, items, res, by);
+    });//obtener por pagina
+
+    async function getExpenses(page, items, res, by){
+        var query = by;
+        var option = {
+            "limit":items,
+            "skip": ((page-1)*items),
+            "projection":{
+                "expenseType":1,
+                "expenseDesc":1
+            },
+            "sort":[["expenseDate", -1]]
+        };
+        let a = expensesColl.find(query, option);
+        let totalExpenses= await a.count();
+        a.toArray((err, expenses)=>{
+            if(err) return res.status(200).json([]);
+            return res.status(200).json({expenses, totalExpenses});
+        });
+    }
+
+    router.get('/:id', (req, res, next)=>{
+        var query = {"_id": new ObjectID(req.params.id)};
+        expensesColl.findOne(query, (err, doc)=>{
+            if(err){return res.status(401).json({"error": "Error al extraer el documento"});
+        }
+            return res.status(200).json(doc);
+        });//Encontrar uno
+    });//Obtener por id
+
+
     router.post('/', (req, res, next)=>{
         console.log('Utiliza esta ruta para insertar expenses');
         var {_id, email} = req.user;
@@ -42,6 +90,38 @@ function expensesInit(db){
 
         
     });//Insertar Expenses
+
+    router.put('/:idElement', (req, res, next)=>{
+        console.log('Utiliza esta ruta para actualizar');
+        var query = {"_id": new ObjectID(req.params.idElement)};
+        var update = {"$set": req.body, "$inc":{"visited":1}};
+        
+        expensesColl.updateOne(query, update, (err, rst)=>{
+            if(err){
+                console.log(err);
+                return res.status(400).json({"Error": "Error al actualizar el documento"});
+            }
+
+            return res.status(200).json(rst);
+        }); //updateOne
+
+
+    });
+
+    router.delete('/:id', (req,res,next)=>{
+
+        var query = {"_id": ObjectID(req.params.id)}
+        expensesColl.removeOne(query, (err, result)=>{
+            if(err){
+                console.log(err);
+                return res.status(400).json({"Error": "Error al eliminar el documento"});
+
+            }
+            return res.status(200).json(result);
+            
+        });
+
+      });
 
     return router;
 }
