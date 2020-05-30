@@ -52,12 +52,6 @@ function expensesInit(db){
                 'expenseMoney': -1
             }
         }
-        /*
-        expensesColl.find({},option).toArray((err, data)=>{
-            if(err) return res.status(200).json([]);
-            return res.status(200).json(data);
-        });   
-        */
         let a = expensesColl.find(query, option);
         let totalExpenses= await a.count();
         
