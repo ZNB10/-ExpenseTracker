@@ -35,24 +35,37 @@ function expensesInit(db){
     });
 
     router.get('/query1', (req, res, next)=>{
-        
+        var by = {"expenseBy._id": new ObjectID(req.user._id)}
+        getOne(res, by);
+    });
+
+    async function getOne(res, by){
+        var query = by;
         var option = {
             "limit":1,
             "projection":{
                 "expenseType": 1,
                 "expenseDesc": 1,
-                "expenseMoney": 1,
-                "expenseBy._id":1
+                "expenseMoney": 1
             },
             "sort": {
                 'expenseMoney': -1
             }
         }
+        /*
         expensesColl.find({},option).toArray((err, data)=>{
             if(err) return res.status(200).json([]);
             return res.status(200).json(data);
-        });        
-    });
+        });   
+        */
+        let a = expensesColl.find(query, option);
+        let totalExpenses= await a.count();
+        
+        a.toArray((err, expenses)=>{
+            if(err) return res.status(200).json([]);
+            return res.status(200).json({expenses, totalExpenses});
+        });
+    }
 
     async function getExpenses(page, items, res, by){
         var query = by;
