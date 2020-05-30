@@ -39,7 +39,7 @@ function expensesInit(db){
         getOne(res, by);
     });
 
-    async function getOne(res, by){
+    function getOne(res, by){
         var query = by;
         var option = {
             "limit":1,
@@ -53,11 +53,10 @@ function expensesInit(db){
             }
         }
         let a = expensesColl.find(query, option);
-        let totalExpenses= await a.count();
         
         a.toArray((err, expenses)=>{
             if(err) return res.status(200).json([]);
-            return res.status(200).json({expenses, totalExpenses});
+            return res.status(200).json({expenses});
         });
     }
 
