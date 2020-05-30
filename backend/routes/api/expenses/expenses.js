@@ -23,6 +23,7 @@ function expensesInit(db){
     router.get('/page', (req, res, next) => {
         var by = {"expenseBy._id": new ObjectID(req.user._id)};
         getExpenses(1, 50, res, by);
+        
     });
 
     router.get('/page/:p/:n', (req, res, next)=>{
@@ -30,7 +31,28 @@ function expensesInit(db){
         var page = parseInt(req.params.p);
         var items = parseInt(req.params.n);
         getExpenses(page, items, res, by);
-    });//obtener por pagina
+        
+    });
+
+    router.get('/query1', (req, res, next)=>{
+        
+        var option = {
+            "limit":1,
+            "projection":{
+                "expenseType": 1,
+                "expenseDesc": 1,
+                "expenseMoney": 1,
+                "expenseBy._id":1
+            },
+            "sort": {
+                'expenseMoney': -1
+            }
+        }
+        expensesColl.find({},option).toArray((err, data)=>{
+            if(err) return res.status(200).json([]);
+            return res.status(200).json(data);
+        });        
+    });
 
     async function getExpenses(page, items, res, by){
         var query = by;
@@ -43,13 +65,16 @@ function expensesInit(db){
             },
             "sort":[["expenseDate", -1]]
         };
+
         let a = expensesColl.find(query, option);
         let totalExpenses= await a.count();
+        
         a.toArray((err, expenses)=>{
             if(err) return res.status(200).json([]);
             return res.status(200).json({expenses, totalExpenses});
         });
     }
+
 
     router.get('/:id', (req, res, next)=>{
         var query = {"_id": new ObjectID(req.params.id)};
@@ -57,8 +82,8 @@ function expensesInit(db){
             if(err){return res.status(401).json({"error": "Error al extraer el documento"});
         }
             return res.status(200).json(doc);
-        });//Encontrar uno
-    });//Obtener por id
+        });
+    });
 
 
     router.post('/', (req, res, next)=>{
