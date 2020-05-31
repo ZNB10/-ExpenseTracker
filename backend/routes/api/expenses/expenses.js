@@ -39,6 +39,11 @@ function expensesInit(db){
         getOne(res, by);
     });
 
+    router.get('/query2', (req, res, next)=>{
+        var by = {"expenseBy._id": new ObjectID(req.user._id)}
+        getTwo(res, by);
+    });
+
     function getOne(res, by){
         var query = by;
         var option = {
@@ -57,6 +62,20 @@ function expensesInit(db){
         a.toArray((err, expenses)=>{
             if(err) return res.status(200).json([]);
             return res.status(200).json({expenses});
+        });
+    }
+
+    function getTwo(res, by){
+        //{$and:[{"expenseBy.email":"eva@gmail.com"}, {"expenseType": {$eq: "Transport"}}]}
+        var query = {
+            $and:[by, {"expenseType": {$eq: "Transport"}}]
+        };
+        var option = {}
+        let a = expensesColl.find(query, option);
+        
+        a.toArray((err, expenses)=>{
+            if(err) return res.status(200).json("Error");
+            return res.status(200).json(expenses);
         });
     }
 
