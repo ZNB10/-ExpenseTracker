@@ -83,6 +83,32 @@ function expensesInit(db) {
     });
   }
 
+  router.get("/query4", (req, res, next) => {
+    var by = { "expenseBy._id": new ObjectID(req.user._id) };
+    getFour(res, by);
+  });
+
+  function getFour(res, by) {
+    var query = by;
+    var option = {
+      limit: 1,
+      projection: {
+        expenseType: 1,
+        expenseDesc: 1,
+        expenseMoney: 1,
+      },
+      sort: {
+        _id: -1,
+      },
+    };
+    let a = expensesColl.find(query, option);
+
+    a.toArray((err, expensesss) => {
+      if (err) return res.status(200).json([]);
+      return res.status(200).json({ expensesss });
+    });
+  }
+
   async function getExpenses(page, items, res, by) {
     var query = by;
     var option = {
