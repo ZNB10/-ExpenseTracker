@@ -3,31 +3,33 @@
 /**
  * Module dependencies.
  */
-var MongoClient = require('mongodb').MongoClient;
-var MongoUri = 'mongodb://localhost:27017';
-var MongoDb = 'ExpenseTrackerV1';
-var MongoOption = { useUnifiedTopology: true};
-
-MongoClient.connect(MongoUri, MongoOption, (err, conn) =>{
-
-  if(err){
+var MongoClient = require("mongodb").MongoClient;
+var MongoUriPrd =
+  "mongodb+srv://ac2020user:oybyW2CEe9l9qi94@cluster0-yyzsb.mongodb.net/test?retryWrites=true&w=majority";
+var MongoUriDev = "mongodb://localhost:27017";
+var MongoUri = process.env.production ? MongoUriPrd : MongoUriDev;
+var MongoDb = "ExpenseTrackerV1";
+var MongoOption = { useUnifiedTopology: true };
+console.log(MongoUri);
+MongoClient.connect(MongoUri, MongoOption, (err, conn) => {
+  if (err) {
     console.log(err);
     process.exit(1);
-  }else{
+  } else {
     console.log("Se conecto con exito a mongodb");
   }
 
   var db = conn.db(MongoDb);
-  var app = require('../app')(db);
-  var debug = require('debug')('backend:server');
-  var http = require('http');
+  var app = require("../app")(db);
+  var debug = require("debug")("backend:server");
+  var http = require("http");
 
   /**
-    * Get port from environment and store in Express.
-    */
+   * Get port from environment and store in Express.
+   */
 
-  var port = normalizePort(process.env.PORT || '3002');
-  app.set('port', port);
+  var port = normalizePort(process.env.PORT || "3002");
+  app.set("port", port);
 
   /**
    * Create HTTP server.
@@ -40,8 +42,8 @@ MongoClient.connect(MongoUri, MongoOption, (err, conn) =>{
    */
 
   server.listen(port);
-  server.on('error', onError);
-  server.on('listening', onListening);
+  server.on("error", onError);
+  server.on("listening", onListening);
 
   /**
    * Normalize a port into a number, string, or false.
@@ -68,22 +70,20 @@ MongoClient.connect(MongoUri, MongoOption, (err, conn) =>{
    */
 
   function onError(error) {
-    if (error.syscall !== 'listen') {
+    if (error.syscall !== "listen") {
       throw error;
     }
 
-    var bind = typeof port === 'string'
-      ? 'Pipe ' + port
-      : 'Port ' + port;
+    var bind = typeof port === "string" ? "Pipe " + port : "Port " + port;
 
     // handle specific listen errors with friendly messages
     switch (error.code) {
-      case 'EACCES':
-        console.error(bind + ' requires elevated privileges');
+      case "EACCES":
+        console.error(bind + " requires elevated privileges");
         process.exit(1);
         break;
-      case 'EADDRINUSE':
-        console.error(bind + ' is already in use');
+      case "EADDRINUSE":
+        console.error(bind + " is already in use");
         process.exit(1);
         break;
       default:
@@ -97,10 +97,7 @@ MongoClient.connect(MongoUri, MongoOption, (err, conn) =>{
 
   function onListening() {
     var addr = server.address();
-    var bind = typeof addr === 'string'
-      ? 'pipe ' + addr
-      : 'port ' + addr.port;
-    debug('Listening on ' + bind);
+    var bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
+    debug("Listening on " + bind);
   }
-
-});// Mongo Connect
+}); // Mongo Connect
